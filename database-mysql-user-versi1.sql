@@ -15,6 +15,6 @@ CREATE TABLE IF NOT EXISTS `tb_admin` (
 --
 -- pasword 1234
 --
-INSERT INTO `pdn_m_user` (`admin_nama`, `admin_email`, `admin_password`, `admin_active`, `admin_tgl_input`, `admin_tgl_edit`) VALUES
+INSERT INTO `tb_admin` (`admin_nama`, `admin_email`, `admin_password`, `admin_active`, `admin_tgl_input`, `admin_tgl_edit`) VALUES
 ('Pudin S', 'admin@email.id', '$2y$10$YJx2/v2TlngG5HgmQwMf1Onmd2iARDaXf7ZVpStmvXaGD2y57q2lW', 1, '2021-05-21 23:51:23', '2021-05-21 16:51:23');
 
