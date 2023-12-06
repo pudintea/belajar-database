@@ -33,7 +33,9 @@ VALUES
 ('limabelas','2014-06-30'),
 ('enambelas','2014-07-07'),
 ('tujuhbelas','2014-07-10');
-Field/kolom terpenting dari tabel tersebut adalah field `tanggal` yang bertipe data DATE, yang nantinya kita gunakan sebagai acuan untuk pengelompokkan data. Perlu diperhatikan di sini, untuk mengoptimalkan penggunaan fungsi-fungsi di database MySQL ada baiknya gunakan tipe data yang sesuai dengan peruntukkannya, Semisal untuk field `tanggal` gunakan tipe data DATE,DATETIME atau TIMESTAMP. Penggunaan tipe data VARCHAR untuk field tanggal bisa jadi mudah penggunaannya, namun dapat menimbulkan kesulitan jika diperlukan pengolahan data berdasarkan tanggal, semisal untuk pengurutan, pengelompokan, menghitung selisih hari dan sebagainya.
+Field/kolom terpenting dari tabel tersebut adalah field `tanggal` yang bertipe data DATE, yang nantinya kita gunakan sebagai acuan untuk pengelompokkan data.
+Perlu diperhatikan di sini, untuk mengoptimalkan penggunaan fungsi-fungsi di database MySQL ada baiknya gunakan tipe data yang sesuai dengan peruntukkannya, Semisal untuk field `tanggal` gunakan tipe data DATE,DATETIME atau TIMESTAMP.
+Penggunaan tipe data VARCHAR untuk field tanggal bisa jadi mudah penggunaannya, namun dapat menimbulkan kesulitan jika diperlukan pengolahan data berdasarkan tanggal, semisal untuk pengurutan, pengelompokan, menghitung selisih hari dan sebagainya.
 
 Pengelompokan Data Harian
 Untuk mengelompokkan data berdasarkan tanggal (harian), adalah mudah saja, karena kita mempunyai satu field yang berisi data tanggal yaitu field tanggal maka kita tinggal menggunakan klausa GROUP BY pada field tersebut. Contoh querynya adalah sebagai berikut:
@@ -138,7 +140,9 @@ GROUP BY MONTH(tanggal);
 |    12 |              2 |
 +-------+----------------+
 8 rows in set (0.00 sec)
-Perlu diperhatikan disini, untuk penglompokkan data perbulan, maka data juga perlu dikelompokkan berdasarkan tahun. Untuk keperluan pengelompokkan data berdasarkan tahun kita gunakan fungsi YEAR(). Mengapa perlu penggunaan fungsi YEAR() juga? hal ini karena bisa saja dalam tahun yang berbeda terdapat bulan yang sama. Semisal terdapat data 2013-06-06 dan 2014-06-04, kedua-nya jika hanya menggunakan fungsi MONTH() maka sama-sama akan terpilih datanya meskipun tahunnya berbeda.
+Perlu diperhatikan disini, untuk penglompokkan data perbulan, maka data juga perlu dikelompokkan berdasarkan tahun. Untuk keperluan pengelompokkan data berdasarkan tahun kita gunakan fungsi YEAR().
+Mengapa perlu penggunaan fungsi YEAR() juga? hal ini karena bisa saja dalam tahun yang berbeda terdapat bulan yang sama.
+Semisal terdapat data 2013-06-06 dan 2014-06-04, kedua-nya jika hanya menggunakan fungsi MONTH() maka sama-sama akan terpilih datanya meskipun tahunnya berbeda.
 Contoh pengelompokkan data perbulan adalah sebagai berikut:
 
 -- -mengelompokkan per-bulan (revisi)
@@ -202,5 +206,13 @@ GROUP BY YEAR(tanggal);
 |  2014 |             14 |
 +-------+----------------+
 1 row in set (0.00 sec)
+
+
 Penutup
-Demikian tutorial singkat mengenai pengelompokkan data berdasarkan tanggal, minggu, bulan dan tahun. Semoga bermanfaat dan tidak lagi membuat kita bingung untuk mengelompokkan data atau mencari data berdasarkan suatu kurun waktu.Sebagai bahan pengayaan, dapat dibaca mengenai fungsi-fungsi untuk tipe data DATE dan DATETIME seperti pada tautan di bagian referensi.
+Demikian tutorial singkat mengenai pengelompokkan data berdasarkan tanggal, minggu, bulan dan tahun.
+Semoga bermanfaat dan tidak lagi membuat kita bingung untuk mengelompokkan data atau mencari data berdasarkan suatu kurun waktu.
+Sebagai bahan pengayaan, dapat dibaca mengenai fungsi-fungsi untuk tipe data DATE dan DATETIME seperti pada tautan di bagian referensi.
+
+
+
+=============================== NAJZMI PUDINTEA =============================================================================================
