@@ -1,0 +1,206 @@
+Pendahuluan
+Dalam praktek sehari-hari seringkali kita dihadapkan pada persoalan untuk menampilkan data per kurun waktu tertentu. Semisal dalam penyajian data laporan transaksi per hari, per minggu, per bulan atau per tahun.
+Secara umum untuk pengelompokan data (aggregasi data) digunakan klausa GROUP BY pada pernyataan query-nya.Pada tutorial kali ini, kita akan memperlajari pengelompokan data harian, mingguan, bulanan dan tahunan.
+
+Sebelumnya, sebagai persiapan kita buat terlebih dahulu satu tabel untuk keperluan pembelajaran kita, yang sebut saja nama tabelnya adalah `tbl_data` dengan struktur dan contoh data sebagai berikut:
+
+-- -membuat tabel `tbl_data`
+DROP TABLE IF EXISTS `tbl_data`;
+CREATE TABLE `tbl_data` (
+`id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+`data` varchar(50) NOT NULL,
+`tanggal` DATE NOT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=MyISAM;
+
+-- -mengisi tabel `tbl_data`
+INSERT INTO `tbl_data`(data,tanggal)
+VALUES
+('satu','2013-07-07'),
+('dua','2013-12-08'),
+('tiga','2013-12-21'),
+('empat','2014-01-01'),
+('lima','2014-01-07'),
+('enam','2014-01-07'),
+('tujuh','2014-01-15'),
+('delapan','2014-02-02'),
+('sembilan','2014-02-03'),
+('sepuluh','2014-03-01'),
+('sebelas','2014-03-14'),
+('duabelas','2014-04-05'),
+('tigabelas','2014-05-06'),
+('empatbelas','2014-06-06'),
+('limabelas','2014-06-30'),
+('enambelas','2014-07-07'),
+('tujuhbelas','2014-07-10');
+Field/kolom terpenting dari tabel tersebut adalah field `tanggal` yang bertipe data DATE, yang nantinya kita gunakan sebagai acuan untuk pengelompokkan data. Perlu diperhatikan di sini, untuk mengoptimalkan penggunaan fungsi-fungsi di database MySQL ada baiknya gunakan tipe data yang sesuai dengan peruntukkannya, Semisal untuk field `tanggal` gunakan tipe data DATE,DATETIME atau TIMESTAMP. Penggunaan tipe data VARCHAR untuk field tanggal bisa jadi mudah penggunaannya, namun dapat menimbulkan kesulitan jika diperlukan pengolahan data berdasarkan tanggal, semisal untuk pengurutan, pengelompokan, menghitung selisih hari dan sebagainya.
+
+Pengelompokan Data Harian
+Untuk mengelompokkan data berdasarkan tanggal (harian), adalah mudah saja, karena kita mempunyai satu field yang berisi data tanggal yaitu field tanggal maka kita tinggal menggunakan klausa GROUP BY pada field tersebut. Contoh querynya adalah sebagai berikut:
+
+-- -mengelompokkan per hari
+SELECT tanggal,COUNT(*) AS jumlah_harian
+FROM tbl_data
+GROUP BY tanggal;
+
++------------+---------------+
+| tanggal    | jumlah_harian |
++------------+---------------+
+| 2013-07-07 |             1 |
+| 2013-12-08 |             1 |
+| 2013-12-21 |             1 |
+| 2014-01-01 |             1 |
+| 2014-01-07 |             2 |
+| 2014-01-15 |             1 |
+| 2014-02-02 |             1 |
+| 2014-02-03 |             1 |
+| 2014-03-01 |             1 |
+| 2014-03-14 |             1 |
+| 2014-04-05 |             1 |
+| 2014-05-06 |             1 |
+| 2014-06-06 |             1 |
+| 2014-06-30 |             1 |
+| 2014-07-07 |             1 |
+| 2014-07-10 |             1 |
++------------+---------------+
+16 rows in set (0.00 sec)
+Bila diinginkan untuk mencari jumlah data yang nilai field `tanggal` adalah sama dengan tanggal hari ini bisa ditambahkan klausa WHERE tanggal=DATE(NOW()) seperti ini:
+
+-- -cari jumlah data yang tanggalnya adalah hari ini
+SELECT tanggal,COUNT(*) AS jumlah_harian
+FROM tbl_data
+WHERE tanggal=DATE(NOW())
+GROUP BY tanggal;
+
++------------+---------------+
+| tanggal    | jumlah_harian |
++------------+---------------+
+| 2014-06-30 |             1 |
++------------+---------------+
+1 row in set (0.00 sec)
+Pengelompokan Data Mingguan
+Pengelompokan data per minggu/mingguan dengan MySQL bisa dengan memanfaatkan fungsi YEARWEEK(). Fungsi ini akan mengembalikan nilai minggu ke berapa dalam suatu tahun dari tanggal yang dimasukkan. Contoh implementasinya adalah:
+
+-- -mengelompokkan per minggu
+SELECT YEARWEEK(tanggal) AS tahun_minggu,COUNT(*) AS jumlah_mingguan
+FROM tbl_data
+GROUP BY YEARWEEK(tanggal);
+
++--------------+-----------------+
+| tahun_minggu | jumlah_mingguan |
++--------------+-----------------+
+|       201327 |               1 |
+|       201349 |               1 |
+|       201350 |               1 |
+|       201352 |               1 |
+|       201401 |               2 |
+|       201402 |               1 |
+|       201405 |               2 |
+|       201408 |               1 |
+|       201410 |               1 |
+|       201413 |               1 |
+|       201418 |               1 |
+|       201422 |               1 |
+|       201426 |               1 |
+|       201427 |               2 |
++--------------+-----------------+
+14 rows in set (0.00 sec)
+
+-- -cari jumlah data yang tanggalnya ada di minggu ini
+SELECT YEARWEEK(tanggal) AS tahun_minggu,COUNT(*) AS jumlah_mingguan
+FROM tbl_data
+WHERE YEARWEEK(tanggal)=YEARWEEK(NOW())
+GROUP BY YEARWEEK(tanggal);
+
++--------------+-----------------+
+| tahun_minggu | jumlah_mingguan |
++--------------+-----------------+
+|       201426 |               1 |
++--------------+-----------------+
+1 row in set (0.00 sec)
+Pengelompokan Data Bulanan
+Dalam pengelompokkan data perbulan kita bisa menggunakan fungsi MONTH() yang akan mengembalikan nilai bulan dari data tanggal yang dimasukkan. Contoh penggunaannya:
+
+-- -mengelompokkan per-bulan
+SELECT MONTH(tanggal) AS bulan, COUNT(*) AS jumlah_bulanan
+FROM tbl_data
+GROUP BY MONTH(tanggal);
++-------+----------------+
+| bulan | jumlah_bulanan |
++-------+----------------+
+|     1 |              4 |
+|     2 |              2 |
+|     3 |              2 |
+|     4 |              1 |
+|     5 |              1 |
+|     6 |              2 |
+|     7 |              3 |
+|    12 |              2 |
++-------+----------------+
+8 rows in set (0.00 sec)
+Perlu diperhatikan disini, untuk penglompokkan data perbulan, maka data juga perlu dikelompokkan berdasarkan tahun. Untuk keperluan pengelompokkan data berdasarkan tahun kita gunakan fungsi YEAR(). Mengapa perlu penggunaan fungsi YEAR() juga? hal ini karena bisa saja dalam tahun yang berbeda terdapat bulan yang sama. Semisal terdapat data 2013-06-06 dan 2014-06-04, kedua-nya jika hanya menggunakan fungsi MONTH() maka sama-sama akan terpilih datanya meskipun tahunnya berbeda.
+Contoh pengelompokkan data perbulan adalah sebagai berikut:
+
+-- -mengelompokkan per-bulan (revisi)
+SELECT CONCAT(YEAR(tanggal),'/',MONTH(tanggal)) AS tahun_bulan, COUNT(*) AS jumlah_bulanan
+FROM tbl_data
+GROUP BY YEAR(tanggal),MONTH(tanggal);
+
++-------------+----------------+
+| tahun_bulan | jumlah_bulanan |
++-------------+----------------+
+| 2013/7      |              1 |
+| 2013/12     |              2 |
+| 2014/1      |              4 |
+| 2014/2      |              2 |
+| 2014/3      |              2 |
+| 2014/4      |              1 |
+| 2014/5      |              1 |
+| 2014/6      |              2 |
+| 2014/7      |              2 |
++-------------+----------------+
+9 rows in set (0.00 sec)
+
+-- - cari jumlah data yang tanggalnya Tahun dan bulan ini
+SELECT CONCAT(YEAR(tanggal),'/',MONTH(tanggal)) AS tahun_bulan, COUNT(*) AS jumlah_bulanan
+FROM tbl_data
+WHERE CONCAT(YEAR(tanggal),'/',MONTH(tanggal))=CONCAT(YEAR(NOW()),'/',MONTH(NOW()))
+GROUP BY YEAR(tanggal),MONTH(tanggal);
+
++-------------+----------------+
+| tahun_bulan | jumlah_bulanan |
++-------------+----------------+
+| 2014/6      |              2 |
++-------------+----------------+
+1 row in set (0.00 sec)
+Pengelompokan Data Tahunan
+Seperti yang sudah dijelaskan sebelumnya, untuk pengelompokkan data pertahun kita menggunakan fungsi YEAR() sebagai berikut:
+
+-- -mengelompokkan per tahun
+SELECT YEAR(tanggal) AS tahun, COUNT(*) AS jumlah_tahunan
+FROM tbl_data
+GROUP BY YEAR(tanggal);
+
++-------+----------------+
+| tahun | jumlah_tahunan |
++-------+----------------+
+|  2013 |              3 |
+|  2014 |             14 |
++-------+----------------+
+2 rows in set (0.00 sec)
+
+
+-- cari jumlah yang tanggalnya tahun 2014
+SELECT YEAR(tanggal) AS tahun, COUNT(*) AS jumlah_tahunan
+FROM tbl_data
+WHERE YEAR(tanggal)='2014'
+GROUP BY YEAR(tanggal);
+
++-------+----------------+
+| tahun | jumlah_tahunan |
++-------+----------------+
+|  2014 |             14 |
++-------+----------------+
+1 row in set (0.00 sec)
+Penutup
+Demikian tutorial singkat mengenai pengelompokkan data berdasarkan tanggal, minggu, bulan dan tahun. Semoga bermanfaat dan tidak lagi membuat kita bingung untuk mengelompokkan data atau mencari data berdasarkan suatu kurun waktu.Sebagai bahan pengayaan, dapat dibaca mengenai fungsi-fungsi untuk tipe data DATE dan DATETIME seperti pada tautan di bagian referensi.
